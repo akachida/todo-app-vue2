@@ -81,7 +81,7 @@ export default class Todo extends Vue {
   public filtros: Array<string> = []
 
   @Watch('list')
-  updateListCounts(current: Array<TodoType>) {
+  public updateListCounts(current: Array<TodoType>) {
     this.done = 0
     this.pending = 0
     this.archived = 0
