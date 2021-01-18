@@ -22,12 +22,20 @@
           </a>
         </div>
         <div class="d-none d-md-block">
-          <a href="#" v-if="!todo.status.includes(Status.Done)">
+          <a
+            v-if="!todo.status.includes(Status.Done)"
+            href="javascript:void(0);"
+            @click="markAsDone(todo)"
+          >
             <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
               <b-icon-square />
             </b-button>
           </a>
-          <a href="#" v-else>
+          <a
+            v-else
+            href="javascript:void(0);"
+            @click="markAsUndone(todo)"
+          >
             <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
               <b-iconstack>
                 <b-icon-square stacked />
@@ -35,18 +43,37 @@
               </b-iconstack>
             </b-button>
           </a>
-          <a href="#">
+
+          <a
+            v-if="!todo.status.includes(Status.Archived)"
+            href="javascript:void(0);"
+            @click="archive(todo)"
+          >
             <b-button class="mr-1" v-b-tooltip.hover title="Arquivar">
               <b-icon-archive-fill />
             </b-button>
           </a>
-          <a href="#">
-            <b-button class="mr-1" v-b-tooltip.hover title="Editar">
+          <a
+            v-else
+            href="javascript:void(0);"
+            @click="unarchive(todo)"
+          >
+            <b-button v-b-tooltip.hover title="Desarquivar">
+              <b-iconstack class="bt-desarquivar">
+                <b-icon icon="archive-fill" />
+                <b-icon icon="arrow-up-short" shift-v="12" />
+              </b-iconstack>
+            </b-button>
+          </a>
+
+          <a href="javascript:void(0);">
+            <b-button class="mr-1" v-b-tooltip.hover title="Editar" v-b-modal.todoForm>
               <b-icon-pencil-fill />
             </b-button>
           </a>
-          <a href="#">
-            <b-button v-b-tooltip.hover title="Excluir">
+
+          <a href="javascript:void(0);">
+            <b-button v-b-tooltip.hover title="Excluir" @click="confirmDelete(todo)">
               <b-icon-trash-fill />
             </b-button>
           </a>
@@ -57,19 +84,79 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
+import Swal from 'sweetalert2'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
 
+import ModalForm from './Modal/Form.vue'
+
 const todoStore = namespace('todo')
 
-@Component
+@Component({
+  components: {
+    ModalForm,
+  },
+})
 export default class Listagem extends Vue {
   @todoStore.State
   public list!: Array<TodoType>
 
   public Status = Status
+
+  @todoStore.Action
+  public removeTodo!: (id: string) => void
+
+  @todoStore.Action
+  public updateTodo!: (todo: TodoType) => void
+
+  public markAsDone(todo: TodoType): void {
+    todo.status.push(Status.Done)
+
+    this.updateTodo(todo)
+  }
+
+  public markAsUndone(todo: TodoType): void {
+    const newItem = todo
+    newItem.status = todo.status.filter((value) => value !== Status.Done)
+
+    this.updateTodo(newItem)
+  }
+
+  public archive(todo: TodoType): void {
+    todo.status.push(Status.Archived)
+
+    this.updateTodo(todo)
+  }
+
+  public unarchive(todo: TodoType): void {
+    const newItem = todo
+    newItem.status = todo.status.filter((value) => value !== Status.Done)
+
+    this.updateTodo(newItem)
+  }
+
+  public confirmDelete(todo: TodoType): void {
+    Swal.fire({
+      title: 'Deletar Tarefa',
+      text: `Tem certeza que deseja deletar "${todo.title}"`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Deletar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.value) {
+        this.removeTodo(todo.id)
+
+        Swal.fire(
+          'Deletado!',
+          'Tarefa deletada com sucesso!',
+          'success',
+        )
+      }
+    })
+  }
 }
 </script>

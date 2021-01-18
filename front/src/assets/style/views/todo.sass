@@ -82,6 +82,14 @@ $activeColor: #42b983
     position: relative
     top: .3rem
 
+  .list-group-item:not(.undone,.arquivada)
+    background-color: #42b983
+    color: #fff
+    & .actions button
+      color: #fff
+      &:focus
+        color: #fff !important
+
   .arquivada
     background: #dedede
     color: #969696

@@ -6,6 +6,7 @@
         :name="'titulo'"
         :id="'id'"
         :required="true"
+        :maxlength="30"
         @change="(value) => titulo = value"
       />
       <b-form-group label="Descrição" label-for="descricao">
@@ -90,6 +91,9 @@ export default class Form extends Vue {
     }
 
     if (this.newTodo(item)) {
+      this.titulo = ''
+      this.descricao = ''
+
       this.$nextTick(() => {
         this.hideModal()
       })

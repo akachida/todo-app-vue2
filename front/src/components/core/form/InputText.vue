@@ -8,6 +8,7 @@
       :id="id"
       :required="required"
       :aria-required="required"
+      :maxlength="maxlength"
       v-model="value"
       @change="$emit('change', value)"
     ></b-input>
@@ -26,6 +27,8 @@ export default class InputText extends Vue {
   @Prop({ required: true }) public name!: string
 
   @Prop({ default: false }) public required!: boolean
+
+  @Prop({ default: 100 }) public maxlength!: boolean
 
   public value = ''
 }
