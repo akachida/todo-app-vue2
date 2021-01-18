@@ -1,8 +1,15 @@
 <template>
   <b-list-group class="mt-2">
-    <b-list-group-item>
+    <b-list-group-item
+      v-for="todo in list"
+      :key="todo.id"
+      :class="{
+        'arquivada': todo.status.includes(Status.Archived),
+        'undone': !todo.status.includes(Status.Done)
+      }"
+    >
       <span class="mr-2 titulo align-middle d-inline-block">
-        Item aqui
+        {{ todo.title }}
       </span>
       <div class="d-inline-block tags">
         <b-badge class="mr-1">tags</b-badge>
@@ -15,9 +22,17 @@
           </a>
         </div>
         <div class="d-none d-md-block">
-          <a href="#">
+          <a href="#" v-if="!todo.status.includes(Status.Done)">
             <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
               <b-icon-square />
+            </b-button>
+          </a>
+          <a href="#" v-else>
+            <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
+              <b-iconstack>
+                <b-icon-square stacked />
+                <b-icon-check stacked />
+              </b-iconstack>
             </b-button>
           </a>
           <a href="#">
@@ -38,49 +53,23 @@
         </div>
       </div>
     </b-list-group-item>
-    <b-list-group-item class="arquivada">
-      <span class="mr-2 titulo align-middle d-inline-block">
-        Arquivada
-      </span>
-      <div class="d-inline-block tags">
-      </div>
-      <div class="float-right actions">
-        <div class="d-sm-block d-md-none">
-          <a href="#">
-            <b-icon-three-dots font-scale="1.5" />
-          </a>
-        </div>
-        <div class="d-none d-md-block">
-          <a href="#">
-            <b-button v-b-tooltip.hover title="Desarquivar">
-              <b-iconstack class="bt-desarquivar">
-                <b-icon icon="archive-fill" />
-                <b-icon icon="arrow-up-short" shift-v="12" />
-              </b-iconstack>
-            </b-button>
-          </a>
-          <a href="#">
-            <b-button class="mr-1" v-b-tooltip.hover title="Editar">
-              <b-icon-pencil-fill />
-            </b-button>
-          </a>
-          <a href="#">
-            <b-button v-b-tooltip.hover title="Excluir">
-              <b-icon-trash-fill />
-            </b-button>
-          </a>
-        </div>
-      </div>
-    </b-list-group-item>
   </b-list-group>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
+
 import { Todo as TodoType } from '@/types/Todo/Todo'
+import { Status } from '@/types/Todo/Status'
+
+const todoStore = namespace('todo')
 
 @Component
 export default class Listagem extends Vue {
-  @Prop({ required: true }) public list!: Array<TodoType>
+  @todoStore.State
+  public list!: Array<TodoType>
+
+  public Status = Status
 }
 </script>
