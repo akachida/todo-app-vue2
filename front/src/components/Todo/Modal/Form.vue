@@ -1,9 +1,13 @@
 <template>
   <b-modal id="todoForm" :title="title" @ok="handleOk">
     <b-form @submit.stop.prevent="onSubmit">
-      <b-form-group label="Título" label-for="titulo">
-        <b-input id="titulo" v-model="titulo"></b-input>
-      </b-form-group>
+      <input-text
+        :label="'Título'"
+        :name="'titulo'"
+        :id="'id'"
+        :required="true"
+        @change="(value) => titulo = value"
+      />
       <b-form-group label="Descrição" label-for="descricao">
         <b-textarea id="descricao" v-model="descricao"></b-textarea>
       </b-form-group>
@@ -20,13 +24,19 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { v4 as uuidv4 } from 'uuid'
 import { namespace } from 'vuex-class'
 
+import InputText from '@/components/core/form/InputText.vue'
+
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { BvModalEvent } from 'bootstrap-vue'
 import { Status } from '@/types/Todo/Status'
 
 const todoStore = namespace('todo')
 
-@Component
+@Component({
+  components: {
+    InputText,
+  },
+})
 export default class Form extends Vue {
   @Prop({ required: true, default: 'Cadastrar Tarefa' }) public title!: string
 
@@ -48,6 +58,30 @@ export default class Form extends Vue {
 
   onSubmit(): void {
     const id = uuidv4()
+
+    if (!this.titulo) {
+      this.$bvToast.toast(
+        'Título é obrigatório',
+        {
+          title: 'Atenção',
+          variant: 'danger',
+          solid: true,
+        },
+      )
+      return
+    }
+
+    if (this.titulo.length < 5) {
+      this.$bvToast.toast(
+        'Título deve conter pelo menos 5 caracteres',
+        {
+          title: 'Atenção',
+          variant: 'danger',
+        },
+      )
+      return
+    }
+
     const item: TodoType = {
       id,
       title: this.titulo,

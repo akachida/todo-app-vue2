@@ -7,7 +7,7 @@
           <b-icon-plus />
         </b-button>
         <ModalForm :title="'Cadastrar Tarefa'" />
-        <b-button class="bt-tags float-right" variant="outline-light" @click="printa">
+        <b-button class="bt-tags float-right" variant="outline-light">
           Tags
         </b-button>
       </b-card-header>
@@ -22,7 +22,6 @@
                 v-model="filtros"
                 name="filtros"
                 :options="filterTypes"
-                @change="printa"
               />
             </div>
             <div class="col text-right">
