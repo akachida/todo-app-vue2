@@ -21,21 +21,18 @@
                 id="filtros"
                 v-model="filtros"
                 name="filtros"
+                :options="filterTypes"
                 @change="printa"
-              >
-                <b-form-checkbox value="finalizadas">Finalizadas</b-form-checkbox>
-                <b-form-checkbox value="pendentes">Pendentes</b-form-checkbox>
-                <b-form-checkbox value="arquivadas">Arquivadas</b-form-checkbox>
-              </b-form-checkbox-group>
+              />
             </div>
             <div class="col text-right">
               <b-badge class="mr-1" variant="primary">Total {{ total }}</b-badge>
-              <b-badge class="mr-1" variant="success">Finalizadas {{finalizadas }}</b-badge>
-              <b-badge class="mr-1" variant="warning">Pendentes {{ pendentes }}</b-badge>
-              <b-badge>Arquivadas {{ arquivadas }}</b-badge>
+              <b-badge class="mr-1" variant="success">Finalizadas {{ done }}</b-badge>
+              <b-badge class="mr-1" variant="warning">Pendentes {{ pending }}</b-badge>
+              <b-badge>Arquivadas {{ archived }}</b-badge>
             </div>
           </div>
-          <Listagem :list="list" />
+          <Listagem />
         </b-form>
       </b-card-body>
     </b-card>
@@ -47,13 +44,14 @@ import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
+import { Status } from '@/types/Todo/Status'
 
 import ModalForm from './Modal/Form.vue'
 import Calendario from './Calendario.vue'
 import Busca from './Busca.vue'
 import Listagem from './Listagem.vue'
 
-const todo = namespace('todo')
+const todoStore = namespace('todo')
 
 @Component({
   components: {
@@ -64,18 +62,18 @@ const todo = namespace('todo')
   },
 })
 export default class Todo extends Vue {
-  @todo.State
+  @todoStore.State
   public list!: Array<TodoType>
 
   public total = 0
 
-  public finalizadas = 0
+  public done = 0
 
-  public pendentes = 0
+  public pending = 0
 
-  public arquivadas = 0
+  public archived = 0
 
-  public tiposFiltros = [
+  public filterTypes = [
     { text: 'Finalizadas', value: 'finalizadas' },
     { text: 'Pendentes', value: 'pendentes' },
     { text: 'Arquivadas', value: 'arquivadas' },
@@ -83,8 +81,12 @@ export default class Todo extends Vue {
 
   public filtros: Array<string> = []
 
-  public printa(): void {
-    console.log(this.filtros)
+  mounted() {
+    this.list.forEach((todo) => {
+      if (todo.status.includes(Status.Done)) this.done += 1
+      if (todo.status.includes(Status.Pending)) this.pending += 1
+      if (todo.status.includes(Status.Archived)) this.archived += 1
+    })
   }
 }
 </script>
