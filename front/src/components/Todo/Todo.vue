@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
@@ -80,8 +80,13 @@ export default class Todo extends Vue {
 
   public filtros: Array<string> = []
 
-  mounted() {
-    this.list.forEach((todo) => {
+  @Watch('list')
+  updateListCounts(current: Array<TodoType>) {
+    this.done = 0
+    this.pending = 0
+    this.archived = 0
+
+    current.forEach((todo) => {
       if (todo.status.includes(Status.Done)) this.done += 1
       if (todo.status.includes(Status.Pending)) this.pending += 1
       if (todo.status.includes(Status.Archived)) this.archived += 1
