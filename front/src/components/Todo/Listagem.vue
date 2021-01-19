@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import Swal from 'sweetalert2'
 
@@ -105,8 +105,7 @@ const todoStore = namespace('todo')
   },
 })
 export default class Listagem extends Vue {
-  @todoStore.State
-  public list!: Array<TodoType>
+  @Prop() public list!: Array<TodoType>
 
   @todoStore.Action
   public removeTodo!: (id: string) => void
@@ -124,14 +123,17 @@ export default class Listagem extends Vue {
   }
 
   public markAsDone(todo: TodoType): void {
-    todo.status.push(Status.Done)
+    const newItem = todo
+    newItem.status = todo.status.filter((status) => status !== Status.Pending)
+    newItem.status.push(Status.Done)
 
-    this.updateTodo(todo)
+    this.updateTodo(newItem)
   }
 
   public markAsUndone(todo: TodoType): void {
     const newItem = todo
     newItem.status = todo.status.filter((value) => value !== Status.Done)
+    newItem.status.push(Status.Pending)
 
     this.updateTodo(newItem)
   }
