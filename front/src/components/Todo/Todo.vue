@@ -6,7 +6,7 @@
         <b-button class="bt-cadastrar big" v-b-modal.todoForm>
           <b-icon-plus />
         </b-button>
-        <ModalForm :title="'Cadastrar Tarefa'" />
+        <ModalAddForm />
         <b-button class="bt-tags float-right" variant="outline-light">
           Tags
         </b-button>
@@ -45,7 +45,7 @@ import { namespace } from 'vuex-class'
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
 
-import ModalForm from './Modal/Form.vue'
+import ModalAddForm from './Modal/Form.vue'
 import Calendario from './Calendario.vue'
 import Busca from './Busca.vue'
 import Listagem from './Listagem.vue'
@@ -57,7 +57,7 @@ const todoStore = namespace('todo')
     Calendario,
     Busca,
     Listagem,
-    ModalForm,
+    ModalAddForm,
   },
 })
 export default class Todo extends Vue {

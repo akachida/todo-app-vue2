@@ -37,7 +37,7 @@ export default class Todo extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public newTodo(todo: TodoType): boolean {
+  public newTodo(todo: TodoType): boolean | Error {
     if (this.list.filter((i) => i.id === todo.id).length > 0) {
       throw Error('Não foi possível inserir pois este ID já existe na lista')
     }
@@ -53,7 +53,13 @@ export default class Todo extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public updateTodo(todo: TodoType): void {
+  public updateTodo(todo: TodoType): boolean | Error {
+    if (!this.list.filter((i) => i.id === todo.id).length) {
+      throw Error('Não foi possível encontrar o ID da Tarefa')
+    }
+
     this.context.commit('update', todo)
+
+    return true
   }
 }

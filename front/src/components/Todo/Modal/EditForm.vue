@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="todoForm" title="Cadastrar Tarefa" @ok="handleOk">
+  <b-modal id="editForm" title="Editar Tarefa" @ok="handleOk">
     <b-form @submit.stop.prevent="onSubmit">
       <b-form-group label="Título *" label-for="titulo" class="required">
         <b-input id="id" required aria-required="true" maxlength="50" v-model="titulo" />
@@ -16,72 +16,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { BvModalEvent } from 'bootstrap-vue'
-import { v4 as uuidv4 } from 'uuid'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
-import { Status } from '@/types/Todo/Status'
+import { BvModalEvent } from 'bootstrap-vue'
 
 const todoStore = namespace('todo')
 
 @Component
-export default class Form extends Vue {
+export default class EditForm extends Vue {
+  @Prop() public todo!: TodoType
+
   public titulo = ''
 
-  public descricao = ''
+  public descricao? = ''
 
   @todoStore.Action
-  public newTodo!: (todo: TodoType) => boolean
+  public updateTodo!: (todo: TodoType) => boolean | Error
 
-  hideModal(): void {
-    this.$bvModal.hide('todoForm')
+  public hideModal(): void {
+    this.$bvModal.hide('editForm')
   }
 
-  handleOk(event: BvModalEvent): void {
+  public handleOk(event: BvModalEvent): void {
     event.preventDefault()
     this.onSubmit()
   }
 
-  onSubmit(): void {
-    if (!this.titulo) {
-      this.$bvToast.toast(
-        'Título é obrigatório',
-        {
-          title: 'Atenção',
-          variant: 'danger',
-          solid: true,
-        },
-      )
-      return
-    }
-
-    if (this.titulo.length < 5) {
-      this.$bvToast.toast(
-        'Título deve conter pelo menos 5 caracteres',
-        {
-          title: 'Atenção',
-          variant: 'danger',
-        },
-      )
-      return
-    }
-
-    const item: TodoType = {
-      id: uuidv4(),
+  public onSubmit(): void {
+    const updatedTodo: TodoType = {
+      ...this.todo,
       title: this.titulo,
       description: this.descricao,
-      status: [Status.Pending],
     }
 
     try {
-      if (this.newTodo(item)) {
-        this.titulo = ''
-        this.descricao = ''
-
+      if (this.updateTodo(updatedTodo)) {
         this.$bvToast.toast(
-          'Tarefa cadastrada',
+          'Tarefa atualizada',
           {
             title: 'Atenção',
             variant: 'success',
@@ -101,6 +74,12 @@ export default class Form extends Vue {
         },
       )
     }
+  }
+
+  @Watch('todo')
+  public updateProps(current: TodoType): void {
+    this.titulo = current.title
+    this.descricao = current.description
   }
 }
 </script>

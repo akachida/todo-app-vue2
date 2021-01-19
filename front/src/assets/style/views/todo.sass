@@ -82,7 +82,7 @@ $activeColor: #42b983
     position: relative
     top: .3rem
 
-  .list-group-item:not(.undone,.arquivada)
+  .list-group-item.done
     background-color: #42b983
     color: #fff
     & .actions button
@@ -90,9 +90,13 @@ $activeColor: #42b983
       &:focus
         color: #fff !important
 
-  .arquivada
+  .arquivada, .arquivada.done
     background: #dedede
     color: #969696
+    & .actions button
+      color: $textColor
+      &:focus
+        color: $textColor !important
     .titulo
       text-decoration: line-through
     &:hover
