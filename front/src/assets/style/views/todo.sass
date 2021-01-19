@@ -82,9 +82,21 @@ $activeColor: #42b983
     position: relative
     top: .3rem
 
-  .arquivada
+  .list-group-item.done
+    background-color: #42b983
+    color: #fff
+    & .actions button
+      color: #fff
+      &:focus
+        color: #fff !important
+
+  .arquivada, .arquivada.done
     background: #dedede
     color: #969696
+    & .actions button
+      color: $textColor
+      &:focus
+        color: $textColor !important
     .titulo
       text-decoration: line-through
     &:hover

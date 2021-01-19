@@ -1,75 +1,178 @@
 <template>
-  <b-list-group class="mt-2">
-    <b-list-group-item
-      v-for="todo in list"
-      :key="todo.id"
-      :class="{
+  <div>
+    <ModalEditForm :todo="editTodo" />
+    <b-list-group class="mt-2">
+      <b-list-group-item
+        v-for="todo in list"
+        :key="todo.id"
+        :class="{
         'arquivada': todo.status.includes(Status.Archived),
-        'undone': !todo.status.includes(Status.Done)
+        'undone': !todo.status.includes(Status.Done),
+        'done': todo.status.includes(Status.Done)
       }"
-    >
+      >
       <span class="mr-2 titulo align-middle d-inline-block">
         {{ todo.title }}
       </span>
-      <div class="d-inline-block tags">
-        <b-badge class="mr-1">tags</b-badge>
-        <b-badge>tags</b-badge>
-      </div>
-      <div class="float-right actions">
-        <div class="d-sm-block d-md-none">
-          <a href="#">
-            <b-icon-three-dots font-scale="1.5" />
-          </a>
+        <div class="d-inline-block tags">
+          <b-badge class="mr-1">tags</b-badge>
+          <b-badge>tags</b-badge>
         </div>
-        <div class="d-none d-md-block">
-          <a href="#" v-if="!todo.status.includes(Status.Done)">
-            <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
-              <b-icon-square />
-            </b-button>
-          </a>
-          <a href="#" v-else>
-            <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
-              <b-iconstack>
-                <b-icon-square stacked />
-                <b-icon-check stacked />
-              </b-iconstack>
-            </b-button>
-          </a>
-          <a href="#">
-            <b-button class="mr-1" v-b-tooltip.hover title="Arquivar">
-              <b-icon-archive-fill />
-            </b-button>
-          </a>
-          <a href="#">
-            <b-button class="mr-1" v-b-tooltip.hover title="Editar">
-              <b-icon-pencil-fill />
-            </b-button>
-          </a>
-          <a href="#">
-            <b-button v-b-tooltip.hover title="Excluir">
-              <b-icon-trash-fill />
-            </b-button>
-          </a>
+        <div class="float-right actions">
+          <div class="d-sm-block d-md-none">
+            <a href="#">
+              <b-icon-three-dots font-scale="1.5" />
+            </a>
+          </div>
+          <div class="d-none d-md-block">
+            <a
+              v-if="!todo.status.includes(Status.Done)"
+              href="javascript:void(0);"
+              @click="markAsDone(todo)"
+            >
+              <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
+                <b-icon-square />
+              </b-button>
+            </a>
+            <a
+              v-else
+              href="javascript:void(0);"
+              @click="markAsUndone(todo)"
+            >
+              <b-button class="mr-1" v-b-tooltip.hover title="Finalizar">
+                <b-iconstack>
+                  <b-icon-square stacked />
+                  <b-icon-check stacked />
+                </b-iconstack>
+              </b-button>
+            </a>
+
+            <a
+              v-if="!todo.status.includes(Status.Archived)"
+              href="javascript:void(0);"
+              @click="archive(todo)"
+            >
+              <b-button class="mr-1" v-b-tooltip.hover title="Arquivar">
+                <b-icon-archive-fill />
+              </b-button>
+            </a>
+            <a
+              v-else
+              href="javascript:void(0);"
+              @click="unarchive(todo)"
+            >
+              <b-button v-b-tooltip.hover title="Desarquivar">
+                <b-iconstack class="bt-desarquivar">
+                  <b-icon icon="archive-fill" />
+                  <b-icon icon="arrow-up-short" shift-v="12" />
+                </b-iconstack>
+              </b-button>
+            </a>
+
+            <a href="javascript:void(0);">
+              <b-button class="mr-1" v-b-tooltip.hover title="Editar" @click="edit(todo)">
+                <b-icon-pencil-fill />
+              </b-button>
+            </a>
+
+            <a href="javascript:void(0);">
+              <b-button v-b-tooltip.hover title="Excluir" @click="confirmDelete(todo)">
+                <b-icon-trash-fill />
+              </b-button>
+            </a>
+          </div>
         </div>
-      </div>
-    </b-list-group-item>
-  </b-list-group>
+      </b-list-group-item>
+    </b-list-group>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
+import Swal from 'sweetalert2'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
 
+import ModalEditForm from './Modal/EditForm.vue'
+
 const todoStore = namespace('todo')
 
-@Component
+@Component({
+  components: {
+    ModalEditForm,
+  },
+})
 export default class Listagem extends Vue {
   @todoStore.State
   public list!: Array<TodoType>
 
+  @todoStore.Action
+  public removeTodo!: (id: string) => void
+
+  @todoStore.Action
+  public updateTodo!: (todo: TodoType) => void
+
   public Status = Status
+
+  public editTodo: TodoType = {
+    id: '',
+    title: '',
+    description: '',
+    status: [],
+  }
+
+  public markAsDone(todo: TodoType): void {
+    todo.status.push(Status.Done)
+
+    this.updateTodo(todo)
+  }
+
+  public markAsUndone(todo: TodoType): void {
+    const newItem = todo
+    newItem.status = todo.status.filter((value) => value !== Status.Done)
+
+    this.updateTodo(newItem)
+  }
+
+  public archive(todo: TodoType): void {
+    todo.status.push(Status.Archived)
+
+    this.updateTodo(todo)
+  }
+
+  public unarchive(todo: TodoType): void {
+    const newItem = todo
+    newItem.status = todo.status.filter((value) => value !== Status.Archived)
+
+    this.updateTodo(newItem)
+  }
+
+  public edit(todo: TodoType): void {
+    this.editTodo = todo
+    this.$bvModal.show('editForm')
+  }
+
+  public confirmDelete(todo: TodoType): void {
+    Swal.fire({
+      title: 'Deletar Tarefa',
+      text: `Tem certeza que deseja deletar "${todo.title}"`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Deletar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.value) {
+        this.removeTodo(todo.id)
+
+        Swal.fire(
+          'Deletado!',
+          'Tarefa deletada com sucesso!',
+          'success',
+        )
+      }
+    })
+  }
 }
 </script>

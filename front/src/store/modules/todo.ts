@@ -21,12 +21,23 @@ export default class Todo extends VuexModule {
   }
 
   @Mutation
-  public remove(id: number): void {
+  public remove(id: string): void {
     this.list = this.list.filter((i) => i.id !== id)
   }
 
+  @Mutation
+  public update(todo: TodoType): void {
+    this.list = this.list.map((item) => {
+      let value = item
+
+      if (value.id === todo.id) value = todo
+
+      return value
+    })
+  }
+
   @Action({ rawError: true })
-  public newTodo(todo: TodoType): boolean {
+  public newTodo(todo: TodoType): boolean | Error {
     if (this.list.filter((i) => i.id === todo.id).length > 0) {
       throw Error('Não foi possível inserir pois este ID já existe na lista')
     }
@@ -37,7 +48,18 @@ export default class Todo extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public removeTodo(id: number): void {
+  public removeTodo(id: string): void {
     this.context.commit('remove', id)
+  }
+
+  @Action({ rawError: true })
+  public updateTodo(todo: TodoType): boolean | Error {
+    if (!this.list.filter((i) => i.id === todo.id).length) {
+      throw Error('Não foi possível encontrar o ID da Tarefa')
+    }
+
+    this.context.commit('update', todo)
+
+    return true
   }
 }
