@@ -86,11 +86,11 @@ export default class Todo extends Vue {
     { text: 'Arquivadas', value: Status.Archived },
   ]
 
-  public filtros: Array<string> = []
+  public filtros: Array<number> = []
 
   public textSearch = ''
 
-  public textSearchTimeout?
+  public textSearchTimeout?: ReturnType<typeof setTimeout>
 
   @Watch('list')
   public updateListCounts(current: Array<TodoType>) {
