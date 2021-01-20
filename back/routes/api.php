@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TodoController;
+use App\Models\Todo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +18,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Todo Routes
+Route::group(['prefix' => 'todo'], function () {
+    Route::get('/list', [TodoController::class, 'list']);
+    Route::get('/{todo}', [TodoController::class, 'show']);
+    Route::post('/', [TodoController::class, 'create']);
+    Route::put('/{todo}', [TodoController::class, 'update']);
+    Route::delete('/{todo}', [TodoController::class, 'destroy']);
 });
