@@ -69,7 +69,7 @@ export default class Form extends Vue {
     }
 
     const item: TodoType = {
-      id: uuidv4(),
+      uuid: uuidv4(),
       title: this.titulo,
       description: this.descricao,
       status: [Status.Pending],

@@ -7,7 +7,7 @@ namespace App\Helpers;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiResponseHelper
+class ApiResponse
 {
     /**
      * Retorna um response HTTP de sucesso em Json

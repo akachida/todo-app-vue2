@@ -4,7 +4,7 @@
     <b-list-group class="mt-2">
       <b-list-group-item
         v-for="todo in list"
-        :key="todo.id"
+        :key="todo.uuid"
         :class="{
         'arquivada': todo.status.includes(Status.Archived),
         'undone': !todo.status.includes(Status.Done),
@@ -116,7 +116,7 @@ export default class Listagem extends Vue {
   public Status = Status
 
   public editTodo: TodoType = {
-    id: '',
+    uuid: '',
     title: '',
     description: '',
     status: [],
@@ -166,7 +166,7 @@ export default class Listagem extends Vue {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.value) {
-        this.removeTodo(todo.id)
+        this.removeTodo(todo.uuid)
 
         Swal.fire(
           'Deletado!',

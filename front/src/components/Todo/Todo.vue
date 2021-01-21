@@ -52,6 +52,7 @@ import { namespace } from 'vuex-class'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
+import TodoService from '@/services/todo.service'
 
 import ModalAddForm from './Modal/Form.vue'
 import Calendario from './Calendario.vue'
@@ -67,6 +68,9 @@ const todoStore = namespace('todo')
   },
 })
 export default class Todo extends Vue {
+  /**
+   * Props
+   */
   @todoStore.State
   public list!: Array<TodoType>
 
@@ -92,6 +96,38 @@ export default class Todo extends Vue {
 
   public textSearchTimeout?: ReturnType<typeof setTimeout>
 
+  @todoStore.Action
+  public loadTodos!: (todos: Array<TodoType>) => boolean | Error
+
+  /**
+   * LifeCycles
+   */
+  // eslint-disable-next-line
+  mounted(): void {
+    const todoService = new TodoService()
+
+    todoService.findAll()
+      .then((response) => {
+        try {
+          this.loadTodos(response.data)
+        } catch (e) {
+          this.$bvToast.toast(
+            e.message,
+            {
+              title: 'Atenção',
+              variant: 'danger',
+            },
+          )
+        }
+      })
+      .catch((reason) => {
+        console.error(reason)
+      })
+  }
+
+  /**
+   * Watchers
+   */
   @Watch('list')
   public updateListCounts(current: Array<TodoType>) {
     this.filterList()
@@ -107,6 +143,9 @@ export default class Todo extends Vue {
     })
   }
 
+  /**
+   * Functions
+   */
   public filterList(): void {
     this.viewList = this.list
     this.filterPerStatus()
