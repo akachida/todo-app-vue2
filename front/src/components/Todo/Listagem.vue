@@ -92,6 +92,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import Swal from 'sweetalert2'
 
+import TodoService from '@/services/todo.service'
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
 
@@ -122,12 +123,30 @@ export default class Listagem extends Vue {
     status: [],
   }
 
+  public async updateTodoService(todo: TodoType): Promise<void> {
+    const todoService = new TodoService()
+    await todoService.update(todo)
+      .then(() => {
+        this.updateTodo(todo)
+      })
+      .catch((reason) => {
+        this.$bvToast.toast(
+          reason,
+          {
+            title: 'Atenção',
+            variant: 'danger',
+          },
+        )
+      })
+  }
+
   public markAsDone(todo: TodoType): void {
     const newItem = todo
+    console.log(todo)
     newItem.status = todo.status.filter((status) => status !== Status.Pending)
     newItem.status.push(Status.Done)
 
-    this.updateTodo(newItem)
+    this.updateTodoService(newItem)
   }
 
   public markAsUndone(todo: TodoType): void {
@@ -135,20 +154,20 @@ export default class Listagem extends Vue {
     newItem.status = todo.status.filter((value) => value !== Status.Done)
     newItem.status.push(Status.Pending)
 
-    this.updateTodo(newItem)
+    this.updateTodoService(newItem)
   }
 
   public archive(todo: TodoType): void {
     todo.status.push(Status.Archived)
 
-    this.updateTodo(todo)
+    this.updateTodoService(todo)
   }
 
   public unarchive(todo: TodoType): void {
     const newItem = todo
     newItem.status = todo.status.filter((value) => value !== Status.Archived)
 
-    this.updateTodo(newItem)
+    this.updateTodoService(newItem)
   }
 
   public edit(todo: TodoType): void {
@@ -164,15 +183,28 @@ export default class Listagem extends Vue {
       showCancelButton: true,
       confirmButtonText: 'Deletar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.value) {
-        this.removeTodo(todo.uuid)
+        const todoService = new TodoService()
+        await todoService.destroy(todo)
+          .then(() => {
+            this.removeTodo(todo.uuid)
 
-        Swal.fire(
-          'Deletado!',
-          'Tarefa deletada com sucesso!',
-          'success',
-        )
+            Swal.fire(
+              'Deletado!',
+              'Tarefa deletada com sucesso!',
+              'success',
+            )
+          })
+          .catch((reason) => {
+            this.$bvToast.toast(
+              reason,
+              {
+                title: 'Atenção',
+                variant: 'danger',
+              },
+            )
+          })
       }
     })
   }

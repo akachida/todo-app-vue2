@@ -71,9 +71,6 @@ export default class Todo extends Vue {
   /**
    * Props
    */
-  @todoStore.State
-  public list!: Array<TodoType>
-
   public viewList: Array<TodoType> = []
 
   public total = 0
@@ -95,6 +92,12 @@ export default class Todo extends Vue {
   public textSearch = ''
 
   public textSearchTimeout?: ReturnType<typeof setTimeout>
+
+  /**
+   * Stores
+   */
+  @todoStore.State
+  public list!: Array<TodoType>
 
   @todoStore.Action
   public loadTodos!: (todos: Array<TodoType>) => boolean | Error
@@ -144,7 +147,7 @@ export default class Todo extends Vue {
   }
 
   /**
-   * Functions
+   * Methods
    */
   public filterList(): void {
     this.viewList = this.list

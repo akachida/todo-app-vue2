@@ -21,10 +21,10 @@ export default class TodoService extends Vue {
   }
 
   public async update(todo: TodoType): Promise<AxiosResponse> {
-    return axios.post(`${this.$data.apiUrl}/todo${todo.uuid}`, todo)
+    return axios.put(`${this.$data.apiUrl}/todo/${todo.uuid}`, todo)
   }
 
   public async destroy(todo: TodoType): Promise<AxiosResponse> {
-    return axios.delete(`${this.$data.apiUrl}/todo${todo.uuid}`)
+    return axios.delete(`${this.$data.apiUrl}/todo/${todo.uuid}`)
   }
 }

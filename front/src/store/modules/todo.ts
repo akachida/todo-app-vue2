@@ -22,7 +22,7 @@ export default class Todo extends VuexModule {
 
   @Mutation
   public append(todo: TodoType): void {
-    this.list.push(todo)
+    this.list = [todo, ...this.list]
   }
 
   @Mutation

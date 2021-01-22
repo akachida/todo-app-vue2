@@ -9,6 +9,7 @@ use App\Helpers\ArrayToResponse;
 use App\Models\Todo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psy\Util\Json;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use \Throwable;
@@ -20,7 +21,15 @@ class TodoController extends Controller
      * @return JsonResponse
      */
     public function list(): JsonResponse {
-        $response = ArrayToResponse::prepare(Todo::all()->toArray());
+        $all = Todo::orderBy('created_at', 'DESC')
+                ->get()
+                ->toArray();
+
+        foreach ($all as $key => $item) {
+            $all[$key]['status'] = json_decode($item['status']);
+        }
+
+        $response = ArrayToResponse::prepare($all);
         return response()->json($response, Response::HTTP_ACCEPTED);
     }
 
@@ -50,13 +59,17 @@ class TodoController extends Controller
      * @return JsonResponse
      */
     public function create(Request $request): JsonResponse {
-        // @TODO: Validation
+        // @TODO: Params Validation
         try {
             $todo = new Todo();
             $todo->uuid = Uuid::uuid4();
             $todo->title = $request->title;
-            $todo->description = $request->description;
-            $todo->status = $request->status;
+            $todo->status = Json::encode($request->status);
+
+            if ($request->description) {
+                $todo->description = $request->description;
+            }
+
             $todo->save();
 
             return ApiResponse::success('Tarefa cadastrada com sucesso');
@@ -73,16 +86,23 @@ class TodoController extends Controller
      *
      * @return JsonResponse
      */
-    public function update(Request $request, Todo $todo) {
-        // @TODO: Validation
+    public function update(Request $request, Todo $todo): JsonResponse {
+        // @TODO: Params Validation
         if (!$todo) {
             return ApiResponse::error('Tarefa não encontrada', Response::HTTP_NOT_FOUND);
         }
 
         try {
             $todo->title = $request->title;
-            $todo->description = $request->description;
-            $todo->status = $request->status;
+
+            if ($todo->description) {
+                $todo->description = $request->description;
+            }
+
+            if ($todo->status) {
+                $todo->status = Json::encode($request->status);
+            }
+
             $todo->save();
 
             return ApiResponse::success('Tarefa atualizada com sucesso');
@@ -98,7 +118,7 @@ class TodoController extends Controller
      *
      * @return JsonResponse
      */
-    public function destroy(Todo $todo) {
+    public function destroy(Todo $todo): JsonResponse {
         try {
             $todo->delete();
 
