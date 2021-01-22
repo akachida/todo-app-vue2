@@ -16,13 +16,18 @@ export default class Todo extends VuexModule {
   }
 
   @Mutation
-  public append(todo: TodoType): void {
-    this.list.push(todo)
+  public loadData(todos: Array<TodoType>): void {
+    this.list = todos
   }
 
   @Mutation
-  public remove(id: string): void {
-    this.list = this.list.filter((i) => i.id !== id)
+  public append(todo: TodoType): void {
+    this.list = [todo, ...this.list]
+  }
+
+  @Mutation
+  public remove(uuid: string): void {
+    this.list = this.list.filter((i) => i.uuid !== uuid)
   }
 
   @Mutation
@@ -30,15 +35,26 @@ export default class Todo extends VuexModule {
     this.list = this.list.map((item) => {
       let value = item
 
-      if (value.id === todo.id) value = todo
+      if (value.uuid === todo.uuid) value = todo
 
       return value
     })
   }
 
   @Action({ rawError: true })
+  public loadTodos(todos: Array<TodoType>): boolean | Error {
+    if (!(todos instanceof Object)) {
+      throw Error('Listagem não está no formato correto.')
+    }
+
+    this.context.commit('loadData', todos)
+
+    return true
+  }
+
+  @Action({ rawError: true })
   public newTodo(todo: TodoType): boolean | Error {
-    if (this.list.filter((i) => i.id === todo.id).length > 0) {
+    if (this.list.filter((i) => i.uuid === todo.uuid).length > 0) {
       throw Error('Não foi possível inserir pois este ID já existe na lista')
     }
 
@@ -48,13 +64,13 @@ export default class Todo extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public removeTodo(id: string): void {
-    this.context.commit('remove', id)
+  public removeTodo(uuid: string): void {
+    this.context.commit('remove', uuid)
   }
 
   @Action({ rawError: true })
   public updateTodo(todo: TodoType): boolean | Error {
-    if (!this.list.filter((i) => i.id === todo.id).length) {
+    if (!this.list.filter((i) => i.uuid === todo.uuid).length) {
       throw Error('Não foi possível encontrar o ID da Tarefa')
     }
 

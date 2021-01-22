@@ -21,6 +21,7 @@ import { BvModalEvent } from 'bootstrap-vue'
 import { v4 as uuidv4 } from 'uuid'
 import { namespace } from 'vuex-class'
 
+import TodoService from '@/services/todo.service'
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Status } from '@/types/Todo/Status'
 
@@ -44,7 +45,7 @@ export default class Form extends Vue {
     this.onSubmit()
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.titulo) {
       this.$bvToast.toast(
         'Título é obrigatório',
@@ -69,29 +70,36 @@ export default class Form extends Vue {
     }
 
     const item: TodoType = {
-      id: uuidv4(),
+      uuid: uuidv4(),
       title: this.titulo,
       description: this.descricao,
       status: [Status.Pending],
     }
 
     try {
-      if (this.newTodo(item)) {
-        this.titulo = ''
-        this.descricao = ''
+      const todoService = new TodoService()
+      await todoService.add(item)
+        .then((response) => {
+          this.newTodo(item)
 
-        this.$bvToast.toast(
-          'Tarefa cadastrada',
-          {
-            title: 'Atenção',
-            variant: 'success',
-          },
-        )
+          this.titulo = ''
+          this.descricao = ''
 
-        this.$nextTick(() => {
-          this.hideModal()
+          this.$bvToast.toast(
+            response.data.message,
+            {
+              title: 'Atenção',
+              variant: 'success',
+            },
+          )
+
+          this.$nextTick(() => {
+            this.hideModal()
+          })
         })
-      }
+        .catch((reason) => {
+          throw Error(reason)
+        })
     } catch (e) {
       this.$bvToast.toast(
         e.message,

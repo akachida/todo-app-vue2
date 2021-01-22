@@ -17,6 +17,7 @@ class CreateTodosTable extends Migration
             $table->uuid('uuid')->primary();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->json('status');
             $table->timestamps();
         });
     }

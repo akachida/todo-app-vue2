@@ -2,7 +2,7 @@ import { Tag } from '@/types/Todo/Tag'
 import { Status } from './Status'
 
 export interface Todo {
-  id: string;
+  uuid: string;
   title: string;
   description?: string;
   status: Array<Status>;
