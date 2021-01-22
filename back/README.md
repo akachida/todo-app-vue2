@@ -10,7 +10,20 @@ MySQL 5.4+<br />
 Run:<br />
 ```
 composer install
-php artisan db:create
-php artisan db:migrate
+php artisan migrate:install
+php artisan migrate
+php artisan serve
+```
+
+Endereço de acesso: http://localhost:8000
+
+## Rotas
+
+```
+GET http://localhost:8000/api/todo/list
+GET http://localhost:8000/api/todo/{uuid}
+POST http://localhost:8000/api/todo
+PUT http://localhost:8000/api/todo/{uuid}
+DELETE http://localhost:8000/api/todo/{uuid}
 ```
 
