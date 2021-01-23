@@ -60,8 +60,6 @@ export default class Form extends Vue {
     const formMonth = this.createdAt.getMonth()
     const formYear = this.createdAt.getFullYear()
 
-    console.log({ curDay, curMonth, curYear, formDay, formMonth, formYear })
-
     return (
       curDay === formDay
       && curMonth === formMonth
