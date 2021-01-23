@@ -15,6 +15,25 @@ $activeColor: #42b983
       left: -6px
       top: -6px
 
+.loading-todo
+  position: fixed
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  z-index: 9999
+  background-color: rgba(0,0,0, .35)
+  color: #fff
+  backdrop-filter: blur(5px)
+  -webkit-backdrop-filter: blur(5px)
+  -moz-backdrop-filter: blur(5px)
+  & svg
+    position: absolute
+    left: 50%
+    top: 50%
+    margin-left: -45px
+    margin-top: -45px
+
 .todo-card
   border: 0
   background-color: #fcfcfc
@@ -105,3 +124,12 @@ $activeColor: #42b983
     &.undone
       background-color: #ffcfcf
       color: #de4b4b
+
+  .calendario
+    a
+      text-decoration: none
+      color: $textColor
+      &:active, &:visited, &:hover
+        text-decoration: none
+      &.bt-prev, &.bt-next
+        color: $activeColor

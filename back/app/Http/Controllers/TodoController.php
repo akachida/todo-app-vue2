@@ -12,18 +12,34 @@ use Illuminate\Http\Request;
 use Psy\Util\Json;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
+use \DateTime;
 use \Throwable;
 
 class TodoController extends Controller
 {
     /**
      * Lista todas as tarefas
+     *
+     * @param Request $request
+     *
      * @return JsonResponse
      */
-    public function list(): JsonResponse {
-        $all = Todo::orderBy('created_at', 'DESC')
-                ->get()
-                ->toArray();
+    public function list(Request $request): JsonResponse {
+        $all = Todo::orderBy('created_at', 'DESC');
+
+        if ($request->date) {
+            try {
+                $date = new DateTime($request->date);
+                $all->whereBetween('created_at', [
+                    $date->format('Y-m-d').' 00:00:00',
+                    $date->format('Y-m-d').' 23:59:59',
+                ]);
+            } catch (Throwable $e) {
+                return ApiResponse::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        $all = $all->get()->toArray();
 
         foreach ($all as $key => $item) {
             $all[$key]['status'] = json_decode($item['status']);
@@ -46,9 +62,9 @@ class TodoController extends Controller
             return ApiResponse::error('Tarefa não encontrada', Response::HTTP_NOT_FOUND);
         }
 
-        $response = ArrayToResponse::prepare($todo);
+        $response = ArrayToResponse::prepare($todo->toArray());
 
-        return response()->json($todo->toArray(), Response::HTTP_ACCEPTED);
+        return response()->json($response, Response::HTTP_ACCEPTED);
     }
 
     /**
@@ -68,6 +84,14 @@ class TodoController extends Controller
 
             if ($request->description) {
                 $todo->description = $request->description;
+            }
+
+            if ($request->createdAt) {
+                try {
+                    $todo->created_at = (new DateTime($request->createdAt))->format('Y-m-d H:i:s');
+                } catch (Throwable $e) {
+                    return ApiResponse::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
+                }
             }
 
             $todo->save();

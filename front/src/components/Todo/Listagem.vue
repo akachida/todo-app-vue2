@@ -142,7 +142,6 @@ export default class Listagem extends Vue {
 
   public markAsDone(todo: TodoType): void {
     const newItem = todo
-    console.log(todo)
     newItem.status = todo.status.filter((status) => status !== Status.Pending)
     newItem.status.push(Status.Done)
 

@@ -1,5 +1,10 @@
 <template>
   <div id="app" class="container">
+    <transition name="fade">
+      <div class="loading-todo" v-show="$store.state.isLoading">
+        <b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+      </div>
+    </transition>
     <router-view/>
   </div>
 </template>
