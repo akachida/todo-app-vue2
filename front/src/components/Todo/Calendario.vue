@@ -76,7 +76,7 @@ export default class Calendario extends Vue {
    * Lifecycle
    */
   mounted() {
-    this.showDate = this.formatDate()
+    this.formatDate()
   }
 }
 </script>
