@@ -4,6 +4,10 @@
       <b-form-group label="Título *" label-for="titulo" class="required">
         <b-input id="id" required aria-required="true" maxlength="50" v-model="titulo" />
       </b-form-group>
+      <b-form-group>
+        <label for="createdAt">Data da tarefa*</label>
+        <b-datepicker name="createdAt" id="createdAt" v-model="createdAt" />
+      </b-form-group>
       <b-form-group label="Descrição" label-for="descricao">
         <b-textarea id="descricao" v-model="descricao"></b-textarea>
       </b-form-group>
@@ -16,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import { BvModalEvent } from 'bootstrap-vue'
 import { v4 as uuidv4 } from 'uuid'
 import { namespace } from 'vuex-class'
@@ -33,19 +37,39 @@ export default class Form extends Vue {
 
   public descricao = ''
 
-  @todoStore.Action
-  public newTodo!: (todo: TodoType) => boolean
+  public createdAt = new Date()
 
-  hideModal(): void {
+  @todoStore.Action
+  private newTodo!: (todo: TodoType) => boolean
+
+  public hideModal(): void {
     this.$bvModal.hide('todoForm')
   }
 
-  handleOk(event: BvModalEvent): void {
+  public handleOk(event: BvModalEvent): void {
     event.preventDefault()
     this.onSubmit()
   }
 
-  async onSubmit(): Promise<void> {
+  private isSameDate(): boolean {
+    const curDay = this.$store.state.curDate.getDate()
+    const curMonth = this.$store.state.curDate.getMonth()
+    const curYear = this.$store.state.curDate.getFullYear()
+
+    const formDay = this.createdAt.getDate()
+    const formMonth = this.createdAt.getMonth()
+    const formYear = this.createdAt.getFullYear()
+
+    console.log({ curDay, curMonth, curYear, formDay, formMonth, formYear })
+
+    return (
+      curDay === formDay
+      && curMonth === formMonth
+      && curYear === formYear
+    )
+  }
+
+  public async onSubmit(): Promise<void> {
     if (!this.titulo) {
       this.$bvToast.toast(
         'Título é obrigatório',
@@ -69,18 +93,34 @@ export default class Form extends Vue {
       return
     }
 
+    if (!this.createdAt) {
+      this.$bvToast.toast(
+        'A data deve ser cadastrada',
+        {
+          title: 'Atenção',
+          variant: 'danger',
+        },
+      )
+      return
+    }
+
+    this.createdAt = new Date(`${this.createdAt} 00:00:00`)
+
     const item: TodoType = {
       uuid: uuidv4(),
       title: this.titulo,
       description: this.descricao,
       status: [Status.Pending],
+      createdAt: this.createdAt,
     }
 
     try {
       const todoService = new TodoService()
       await todoService.add(item)
         .then((response) => {
-          this.newTodo(item)
+          if (this.isSameDate()) {
+            this.newTodo(item)
+          }
 
           this.titulo = ''
           this.descricao = ''

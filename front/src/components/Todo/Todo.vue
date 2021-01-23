@@ -1,5 +1,6 @@
  <template>
   <div>
+
     <b-card no-body class="mb-3 todo-card shadow-lg">
       <b-card-header>
         <h1 class="float-left">To-do List</h1>
@@ -12,7 +13,7 @@
         </b-button>
       </b-card-header>
       <b-card-body>
-        <Calendario />
+        <Calendario @change="(date) => { findAllTodo(date) }" />
         <div class="row">
           <div class="col mt-2 mb-3">
             <b-form-input
@@ -107,25 +108,7 @@ export default class Todo extends Vue {
    */
   // eslint-disable-next-line
   mounted(): void {
-    const todoService = new TodoService()
-
-    todoService.findAll()
-      .then((response) => {
-        try {
-          this.loadTodos(response.data)
-        } catch (e) {
-          this.$bvToast.toast(
-            e.message,
-            {
-              title: 'Atenção',
-              variant: 'danger',
-            },
-          )
-        }
-      })
-      .catch((reason) => {
-        console.error(reason)
-      })
+    this.findAllTodo(new Date())
   }
 
   /**
@@ -149,6 +132,32 @@ export default class Todo extends Vue {
   /**
    * Methods
    */
+  public findAllTodo(date: Date): void {
+    const todoService = new TodoService()
+    const year = date.getFullYear()
+    const month = (`0${date.getMonth() + 1}`).substr(-2, 2)
+    const day = date.getDate()
+
+    todoService.findAll({ date: `${year}-${month}-${day}` })
+      .then((response) => {
+        try {
+          this.loadTodos(response.data)
+          this.$store.dispatch('toggleLoading')
+        } catch (e) {
+          this.$bvToast.toast(
+            e.message,
+            {
+              title: 'Atenção',
+              variant: 'danger',
+            },
+          )
+        }
+      })
+      .catch((reason) => {
+        console.error(reason)
+      })
+  }
+
   public filterList(): void {
     this.viewList = this.list
     this.filterPerStatus()

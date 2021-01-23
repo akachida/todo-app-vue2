@@ -4,9 +4,10 @@ import axios, { AxiosResponse } from 'axios'
 import { Todo as TodoType } from '@/types/Todo/Todo'
 
 export default class TodoService extends Vue {
-  public async findAll(): Promise<AxiosResponse> {
+  public async findAll(params: Record<string, string>): Promise<AxiosResponse> {
     return axios.get(`${this.$data.apiUrl}/todo/list`, {
       responseType: 'json',
+      params,
     })
   }
 
