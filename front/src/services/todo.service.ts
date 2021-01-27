@@ -2,8 +2,9 @@ import Vue from 'vue'
 import axios, { AxiosResponse } from 'axios'
 
 import { Todo as TodoType } from '@/types/Todo/Todo'
+import { ServiceInterface } from '@/services/ServiceInterface'
 
-export default class TodoService extends Vue {
+export default class TodoService extends Vue implements ServiceInterface<TodoType> {
   public async findAll(params: Record<string, string>): Promise<AxiosResponse> {
     return axios.get(`${this.$data.apiUrl}/todo/list`, {
       responseType: 'json',

@@ -1,4 +1,4 @@
-import { Tag } from '@/types/Todo/Tag'
+import { Tag } from '@/types/Tag/Tag'
 import { Status } from './Status'
 
 export interface Todo {

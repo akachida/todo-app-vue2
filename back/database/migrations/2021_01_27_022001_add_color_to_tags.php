@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNameToTags extends Migration
+class AddColorToTags extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddNameToTags extends Migration
     public function up()
     {
         Schema::table('tags', function (Blueprint $table) {
-            $table->string('name')->after('uuid');
+            $table->string('color', 7)->after('name');
         });
     }
 
@@ -26,7 +26,7 @@ class AddNameToTags extends Migration
     public function down()
     {
         Schema::table('tags', function (Blueprint $table) {
-            $table->dropColumn('name');
+            $table->dropColumn(['color']);
         });
     }
 }

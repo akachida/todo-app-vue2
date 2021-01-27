@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\TodoController;
-use App\Models\Todo;
+use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +27,13 @@ Route::group(['prefix' => 'todo'], function () {
     Route::post('/', [TodoController::class, 'create']);
     Route::put('/{todo}', [TodoController::class, 'update']);
     Route::delete('/{todo}', [TodoController::class, 'destroy']);
+});
+
+// Tag Routes
+Route::group(['prefix' => 'tag'], function () {
+    Route::get('/list', [TagController::class, 'list']);
+    Route::get('/{todo}', [TagController::class, 'show']);
+    Route::post('/', [TagController::class, 'create']);
+    Route::put('/{todo}', [TagController::class, 'update']);
+    Route::delete('/{todo}', [TagController::class, 'destroy']);
 });

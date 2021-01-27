@@ -22,7 +22,6 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { BvModalEvent } from 'bootstrap-vue'
-import { v4 as uuidv4 } from 'uuid'
 import { namespace } from 'vuex-class'
 
 import TodoService from '@/services/todo.service'
@@ -105,7 +104,7 @@ export default class Form extends Vue {
     this.createdAt = new Date(`${this.createdAt} 00:00:00`)
 
     const item: TodoType = {
-      uuid: uuidv4(),
+      uuid: '',
       title: this.titulo,
       description: this.descricao,
       status: [Status.Pending],
