@@ -9,19 +9,19 @@ import { Tag as TagType } from '@/types/Tag/Tag'
 
 @Module({ namespaced: true })
 export default class Tag extends VuexModule {
-  public list: Array<Tag> = []
+  public list: Array<TagType> = []
 
-  get listTag(): Array<Tag> {
+  get listTag(): Array<TagType> {
     return this.list
   }
 
   @Mutation
-  public loadData(tags: Array<Tag>): void {
+  public loadData(tags: Array<TagType>): void {
     this.list = tags
   }
 
   @Mutation
-  public append(tag: Tag): void {
+  public append(tag: TagType): void {
     this.list = [tag, ...this.list]
   }
 
@@ -31,7 +31,7 @@ export default class Tag extends VuexModule {
   }
 
   @Mutation
-  public update(tag: Tag): void {
+  public update(tag: TagType): void {
     this.list = this.list.map((item) => {
       let value = item
 
@@ -42,7 +42,7 @@ export default class Tag extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public loadTags(tags: Array<Tag>): boolean | Error {
+  public loadTags(tags: Array<TagType>): boolean | Error {
     if (!(tags instanceof Object)) {
       throw Error('Listagem não está no formato correto.')
     }
@@ -53,7 +53,7 @@ export default class Tag extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public newTag(tag: Tag): boolean | Error {
+  public newTag(tag: TagType): boolean | Error {
     if (this.list.filter((i) => i.uuid === tag.uuid).length > 0) {
       throw Error('Não foi possível inserir pois este ID já existe na lista')
     }
@@ -69,7 +69,7 @@ export default class Tag extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public updateTag(tag: Tag): boolean | Error {
+  public updateTag(tag: TagType): boolean | Error {
     if (!this.list.filter((i) => i.uuid === tag.uuid).length) {
       throw Error('Não foi possível encontrar o ID da Tag')
     }

@@ -57,7 +57,7 @@ export default class Tags extends Vue {
     console.log(this.color)
   }
 
-  public async onSubmit(): void {
+  public async onSubmit(): Promise<void> {
     if (!this.name) {
       this.$bvToast.toast(
         'Nome é obrigatório',
