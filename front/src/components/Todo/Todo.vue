@@ -8,9 +8,10 @@
           <b-icon-plus />
         </b-button>
         <ModalAddForm />
-        <b-button class="bt-tags float-right" variant="outline-light">
+        <b-button class="bt-tags float-right" variant="outline-light" v-b-modal.tagsForm>
           Tags
         </b-button>
+        <ModalTagForm />
       </b-card-header>
       <b-card-body>
         <Calendario @change="(date) => { findAllTodo(date) }" />
@@ -58,6 +59,7 @@ import TodoService from '@/services/todo.service'
 import ModalAddForm from './Modal/Form.vue'
 import Calendario from './Calendario.vue'
 import Listagem from './Listagem.vue'
+import ModalTagForm from './Modal/Tags/Tags.vue'
 
 const todoStore = namespace('todo')
 
@@ -66,6 +68,7 @@ const todoStore = namespace('todo')
     Calendario,
     Listagem,
     ModalAddForm,
+    ModalTagForm,
   },
 })
 export default class Todo extends Vue {
@@ -106,7 +109,6 @@ export default class Todo extends Vue {
   /**
    * LifeCycles
    */
-  // eslint-disable-next-line
   mounted(): void {
     this.findAllTodo(new Date())
   }

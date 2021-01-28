@@ -68,7 +68,7 @@ class TodoController extends Controller
     }
 
     /**
-     * Creia uma nova tarefa
+     * Cria uma nova tarefa
      *
      * @param Request $request
      *
@@ -103,7 +103,7 @@ class TodoController extends Controller
     }
 
     /**
-     * Atualia uma tarefa específica
+     * Atualiza uma tarefa específica
      *
      * @param Request $request
      * @param Todo $todo
