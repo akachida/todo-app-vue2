@@ -9,30 +9,30 @@ import { Tag as TagType } from '@/types/Tag/Tag'
 
 @Module({ namespaced: true })
 export default class Tag extends VuexModule {
-  public list: Array<TagType> = []
+  public tags: Array<TagType> = []
 
   get listTag(): Array<TagType> {
-    return this.list
+    return this.tags
   }
 
   @Mutation
   public loadData(tags: Array<TagType>): void {
-    this.list = tags
+    this.tags = tags
   }
 
   @Mutation
   public append(tag: TagType): void {
-    this.list = [tag, ...this.list]
+    this.tags = [tag, ...this.tags]
   }
 
   @Mutation
   public remove(uuid: string): void {
-    this.list = this.list.filter((i) => i.uuid !== uuid)
+    this.tags = this.tags.filter((i) => i.uuid !== uuid)
   }
 
   @Mutation
   public update(tag: TagType): void {
-    this.list = this.list.map((item) => {
+    this.tags = this.tags.map((item) => {
       let value = item
 
       if (value.uuid === tag.uuid) value = tag
@@ -54,7 +54,7 @@ export default class Tag extends VuexModule {
 
   @Action({ rawError: true })
   public newTag(tag: TagType): boolean | Error {
-    if (this.list.filter((i) => i.uuid === tag.uuid).length > 0) {
+    if (this.tags.filter((i) => i.uuid === tag.uuid).length > 0) {
       throw Error('Não foi possível inserir pois este ID já existe na lista')
     }
 
@@ -70,7 +70,7 @@ export default class Tag extends VuexModule {
 
   @Action({ rawError: true })
   public updateTag(tag: TagType): boolean | Error {
-    if (!this.list.filter((i) => i.uuid === tag.uuid).length) {
+    if (!this.tags.filter((i) => i.uuid === tag.uuid).length) {
       throw Error('Não foi possível encontrar o ID da Tag')
     }
 

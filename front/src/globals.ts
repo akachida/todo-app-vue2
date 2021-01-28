@@ -3,7 +3,7 @@ import Vue from 'vue'
 Vue.mixin({
   data() {
     return {
-      get apiUrl() {
+      get todoApiUrl() {
         return process.env.VUE_APP_API_URL
       },
     }

@@ -32,8 +32,8 @@ Route::group(['prefix' => 'todo'], function () {
 // Tag Routes
 Route::group(['prefix' => 'tag'], function () {
     Route::get('/list', [TagController::class, 'list']);
-    Route::get('/{todo}', [TagController::class, 'show']);
+    Route::get('/{tag}', [TagController::class, 'show']);
     Route::post('/', [TagController::class, 'create']);
-    Route::put('/{todo}', [TagController::class, 'update']);
-    Route::delete('/{todo}', [TagController::class, 'destroy']);
+    Route::put('/{tag}', [TagController::class, 'update']);
+    Route::delete('/{tag}', [TagController::class, 'destroy']);
 });

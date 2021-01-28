@@ -109,7 +109,6 @@ export default class Todo extends Vue {
   /**
    * LifeCycles
    */
-  // eslint-disable-next-line
   mounted(): void {
     this.findAllTodo(new Date())
   }

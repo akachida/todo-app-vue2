@@ -12,7 +12,8 @@ class Tag extends Model
     protected $primaryKey = 'uuid';
 
     protected $fillable = [
-        'name'
+        'name',
+        'color'
     ];
 
     protected $casts = [
