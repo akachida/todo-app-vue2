@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\ArrayToResponse;
+use App\Models\Tag;
 use App\Models\Todo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -95,6 +96,10 @@ class TodoController extends Controller
             }
 
             $todo->save();
+
+            if ($request->tags) {
+                $todo->tags()->sync($request->tags);
+            }
 
             return ApiResponse::success('Tarefa cadastrada com sucesso');
         } catch (Throwable $e) {

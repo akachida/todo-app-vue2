@@ -8,6 +8,19 @@
         <label for="createdAt">Data da tarefa*</label>
         <b-datepicker name="createdAt" id="createdAt" v-model="createdAt" />
       </b-form-group>
+      <b-form-group>
+        <b-form-checkbox-group>
+          <b-form-checkbox
+            v-for="tag in tags"
+            v-model="tagsSelected"
+            :key="tag.uuid"
+            :value="tag.uuid"
+            name="tags[]"
+          >
+            <b-badge :style="`background-color: ${tag.color}`">{{ tag.name }}</b-badge>
+          </b-form-checkbox>
+        </b-form-checkbox-group>
+      </b-form-group>
       <b-form-group label="Descrição" label-for="descricao">
         <b-textarea id="descricao" v-model="descricao"></b-textarea>
       </b-form-group>
@@ -26,21 +39,73 @@ import { namespace } from 'vuex-class'
 
 import TodoService from '@/services/todo.service'
 import { Todo as TodoType } from '@/types/Todo/Todo'
+import { Tag as TagType } from '@/types/Tag/Tag'
 import { Status } from '@/types/Todo/Status'
+import TagService from '@/services/tag.service'
 
 const todoStore = namespace('todo')
+const tagStore = namespace('tag')
 
 @Component
 export default class Form extends Vue {
+  /**
+   * Props
+   */
   public titulo = ''
 
   public descricao = ''
 
   public createdAt = new Date()
 
+  public tagsSelected = []
+
+  /**
+   * Stores
+   */
+  @tagStore.State
+  public tags!: Array<TagType>
+
   @todoStore.Action
   private newTodo!: (todo: TodoType) => boolean
 
+  @tagStore.Action
+  private loadTags!: (tags: Array<TagType>) => boolean | Error
+
+  /**
+   * LifeCycles
+   */
+  mounted(): void {
+    const tagService = new TagService()
+
+    tagService.findAll({})
+      .then((response) => {
+        try {
+          this.loadTags(response.data)
+          this.tableData = response.data.map(
+            (tag: TagType) => ({
+              name: tag.name,
+              color: tag.color,
+              ações: 'excluir',
+            }),
+          )
+        } catch (e) {
+          this.$bvToast.toast(
+            e.message,
+            {
+              title: 'Atenção',
+              variant: 'danger',
+            },
+          )
+        }
+      })
+      .catch((reason) => {
+        console.error(reason)
+      })
+  }
+
+  /**
+   * Methods
+   */
   public hideModal(): void {
     this.$bvModal.hide('todoForm')
   }
@@ -109,6 +174,7 @@ export default class Form extends Vue {
       description: this.descricao,
       status: [Status.Pending],
       createdAt: this.createdAt,
+      tags: this.tagsSelected,
     }
 
     try {

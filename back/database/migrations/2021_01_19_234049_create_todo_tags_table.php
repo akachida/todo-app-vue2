@@ -23,7 +23,7 @@ class CreateTodoTagsTable extends Migration
                 ->onDelete('cascade');
             $table->foreign('tag_uuid')
                 ->references('uuid')
-                ->on('todos')
+                ->on('tags')
                 ->onDelete('cascade');
             $table->timestamps();
         });

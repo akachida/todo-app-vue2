@@ -5,7 +5,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Todo extends Model
 {
@@ -20,12 +20,14 @@ class Todo extends Model
         'uuid' => 'string'
     ];
 
+    public $incrementing = false;
+
     /**
      * Retorna todas as tags relacionadas ao Todo
      *
-     * @return HasMany
+     * @return BelongsToMany
      */
-    public function tags(): HasMany {
-        return $this->hasMany(Tag::class, 'todo_uuid');
+    public function tags(): BelongsToMany {
+        return $this->belongsToMany(Tag::class, 'todo_tags');
     }
 }
