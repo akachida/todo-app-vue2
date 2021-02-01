@@ -40,13 +40,17 @@ class TodoController extends Controller
             }
         }
 
-        $all = $all->get()->toArray();
+        $allToArray = [];
 
-        foreach ($all as $key => $item) {
-            $all[$key]['status'] = json_decode($item['status']);
+        foreach ($all->get() as $item) {
+            $todo = $item->toArray();
+            $todo['status'] = json_decode($item['status']);
+            $todo['tags'] = $item->tags()->get(['uuid', 'name', 'color'])->toArray();
+
+            array_push($allToArray, $todo);
         }
 
-        $response = ArrayToResponse::prepare($all);
+        $response = ArrayToResponse::prepare($allToArray);
         return response()->json($response, Response::HTTP_ACCEPTED);
     }
 

@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tag extends Model
 {
+    public $incrementing = false;
+
     protected $primaryKey = 'uuid';
+
+    protected $hidden = ['pivot'];
 
     protected $fillable = [
         'name',
@@ -20,7 +24,6 @@ class Tag extends Model
         'uuid' => 'string'
     ];
 
-    public $incrementing = false;
 
     /**
      * Retorna todas as tags relacionadas a Tag

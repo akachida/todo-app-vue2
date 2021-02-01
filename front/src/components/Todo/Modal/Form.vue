@@ -38,10 +38,10 @@ import { BvModalEvent } from 'bootstrap-vue'
 import { namespace } from 'vuex-class'
 
 import TodoService from '@/services/todo.service'
+import TagService from '@/services/tag.service'
 import { Todo as TodoType } from '@/types/Todo/Todo'
 import { Tag as TagType } from '@/types/Tag/Tag'
 import { Status } from '@/types/Todo/Status'
-import TagService from '@/services/tag.service'
 
 const todoStore = namespace('todo')
 const tagStore = namespace('tag')
@@ -55,9 +55,11 @@ export default class Form extends Vue {
 
   public descricao = ''
 
-  public createdAt = new Date()
+  public createdAt: string | Date = new Date()
 
   public tagsSelected = []
+
+  public currentDate = this.$store.state.curDate
 
   /**
    * Stores
@@ -81,13 +83,6 @@ export default class Form extends Vue {
       .then((response) => {
         try {
           this.loadTags(response.data)
-          this.tableData = response.data.map(
-            (tag: TagType) => ({
-              name: tag.name,
-              color: tag.color,
-              ações: 'excluir',
-            }),
-          )
         } catch (e) {
           this.$bvToast.toast(
             e.message,
@@ -115,20 +110,32 @@ export default class Form extends Vue {
     this.onSubmit()
   }
 
-  private isSameDate(): boolean {
-    const curDay = this.$store.state.curDate.getDate()
-    const curMonth = this.$store.state.curDate.getMonth()
+  public updateDate(): void {
+    const curDate = (`0${this.$store.state.curDate.getDate()}`).substr(-2, 2)
+    const curMont = (`0${this.$store.state.curDate.getMonth() + 1}`).substr(-2, 2)
     const curYear = this.$store.state.curDate.getFullYear()
 
-    const formDay = this.createdAt.getDate()
-    const formMonth = this.createdAt.getMonth()
-    const formYear = this.createdAt.getFullYear()
+    this.createdAt = `${curYear}-${curMont}-${curDate}`
+  }
 
-    return (
-      curDay === formDay
-      && curMonth === formMonth
-      && curYear === formYear
-    )
+  private isSameDate(): boolean {
+    if (this.createdAt instanceof Date) {
+      const curDay = this.$store.state.curDate.getDate()
+      const curMonth = this.$store.state.curDate.getMonth()
+      const curYear = this.$store.state.curDate.getFullYear()
+
+      const formDay = this.createdAt.getUTCDate()
+      const formMonth = this.createdAt.getUTCMonth()
+      const formYear = this.createdAt.getUTCFullYear()
+
+      return (
+        curDay === formDay
+        && curMonth === formMonth
+        && curYear === formYear
+      )
+    }
+
+    return false
   }
 
   public async onSubmit(): Promise<void> {
@@ -166,7 +173,13 @@ export default class Form extends Vue {
       return
     }
 
-    this.createdAt = new Date(`${this.createdAt} 00:00:00`)
+    const currentDate = new Date()
+    const currentHours = currentDate.getHours()
+    const currentMinutes = currentDate.getMinutes()
+    const currentSeconds = currentDate.getSeconds()
+    const currentTime = `${currentHours}:${currentMinutes}:${currentSeconds}`
+
+    this.createdAt = new Date(`${this.createdAt}T${currentTime}Z`)
 
     const item: TodoType = {
       uuid: '',

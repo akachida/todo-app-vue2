@@ -41,7 +41,7 @@
           <template #cell(color)="data">
             <b-badge :style="`background-color: ${data.value}`">{{ data.value }}</b-badge>
           </template>
-          <template #cell(ações)="data">
+          <template #cell(actions)="data" title="Ações">
             <b-button size="sm" variant="primary" @click="openUpdateTag(data)" class="mr-1">
               <b-icon-pencil />
             </b-button>
@@ -113,7 +113,7 @@ export default class Tags extends Vue {
             (tag: TagType) => ({
               name: tag.name,
               color: tag.color,
-              ações: 'excluir',
+              actions: 'excluir',
             }),
           )
         } catch (e) {
@@ -140,8 +140,7 @@ export default class Tags extends Vue {
       (tag: TagType) => ({
         name: tag.name,
         color: tag.color,
-        // eslint-disable-next-line
-        'ações': tag.uuid,
+        actions: tag.uuid,
       }),
     )
   }

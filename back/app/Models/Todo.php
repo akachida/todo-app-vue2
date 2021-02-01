@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Todo extends Model
 {
+    public $incrementing = false;
+
     protected $primaryKey = 'uuid';
+
+    protected $hidden = ['pivot'];
 
     protected $fillable = [
         'title',
@@ -19,8 +23,6 @@ class Todo extends Model
     protected $casts = [
         'uuid' => 'string'
     ];
-
-    public $incrementing = false;
 
     /**
      * Retorna todas as tags relacionadas ao Todo
