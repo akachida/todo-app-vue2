@@ -54,8 +54,8 @@ export default class Tag extends VuexModule {
 
   @Action({ rawError: true })
   public newTag(tag: TagType): boolean | Error {
-    if (this.tags.filter((i) => i.uuid === tag.uuid).length > 0) {
-      throw Error('Não foi possível inserir pois este ID já existe na lista')
+    if (this.tags.filter((i) => i.name === tag.name).length > 0) {
+      throw Error('Não foi possível inserir pois este Nome já existe na lista')
     }
 
     this.context.commit('append', tag)

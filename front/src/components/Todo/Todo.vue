@@ -4,10 +4,10 @@
     <b-card no-body class="mb-3 todo-card shadow-lg">
       <b-card-header>
         <h1 class="float-left">To-do List</h1>
-        <b-button class="bt-cadastrar big" v-b-modal.todoForm>
+        <b-button class="bt-cadastrar big" @click="openForm">
           <b-icon-plus />
         </b-button>
-        <ModalAddForm />
+        <ModalAddForm ref="modalAddForm" />
         <b-button class="bt-tags float-right" variant="outline-light" v-b-modal.tagsForm>
           Tags
         </b-button>
@@ -72,6 +72,10 @@ const todoStore = namespace('todo')
   },
 })
 export default class Todo extends Vue {
+  $refs!: {
+    modalAddForm: ModalAddForm;
+  }
+
   /**
    * Props
    */
@@ -134,6 +138,11 @@ export default class Todo extends Vue {
   /**
    * Methods
    */
+  public openForm(): void {
+    this.$bvModal.show('todoForm')
+    this.$refs.modalAddForm.updateDate()
+  }
+
   public findAllTodo(date: Date): void {
     const todoService = new TodoService()
     const year = date.getFullYear()

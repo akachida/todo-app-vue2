@@ -7,6 +7,6 @@ export interface Todo {
   description?: string;
   status: Array<Status>;
   tags?: Array<Tag>;
-  createdAt?: Date;
+  createdAt: Date;
   updatedAt?: Date;
 }

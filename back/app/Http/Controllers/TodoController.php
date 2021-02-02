@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\ArrayToResponse;
+use App\Models\Tag;
 use App\Models\Todo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,13 +40,17 @@ class TodoController extends Controller
             }
         }
 
-        $all = $all->get()->toArray();
+        $allToArray = [];
 
-        foreach ($all as $key => $item) {
-            $all[$key]['status'] = json_decode($item['status']);
+        foreach ($all->get() as $item) {
+            $todo = $item->toArray();
+            $todo['status'] = json_decode($item['status']);
+            $todo['tags'] = $item->tags()->get(['uuid', 'name', 'color'])->toArray();
+
+            array_push($allToArray, $todo);
         }
 
-        $response = ArrayToResponse::prepare($all);
+        $response = ArrayToResponse::prepare($allToArray);
         return response()->json($response, Response::HTTP_ACCEPTED);
     }
 
@@ -95,6 +100,10 @@ class TodoController extends Controller
             }
 
             $todo->save();
+
+            if ($request->tags) {
+                $todo->tags()->sync($request->tags);
+            }
 
             return ApiResponse::success('Tarefa cadastrada com sucesso');
         } catch (Throwable $e) {

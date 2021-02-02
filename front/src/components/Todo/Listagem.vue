@@ -15,8 +15,14 @@
         {{ todo.title }}
       </span>
         <div class="d-inline-block tags">
-          <b-badge class="mr-1">tags</b-badge>
-          <b-badge>tags</b-badge>
+          <b-badge
+            class="mr-1"
+            v-for="tag in todo.tags"
+            :key="tag.name"
+            :style="`background-color: ${tag.color}!important`"
+          >
+            {{ tag.name }}
+          </b-badge>
         </div>
         <div class="float-right actions">
           <div class="d-sm-block d-md-none">
@@ -121,6 +127,8 @@ export default class Listagem extends Vue {
     title: '',
     description: '',
     status: [],
+    tags: [],
+    createdAt: new Date(),
   }
 
   public async updateTodoService(todo: TodoType): Promise<void> {
