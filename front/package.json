@@ -52,21 +52,5 @@
     "typescript": "~3.9.3",
     "vue-cli-plugin-bootstrap-vue": "~0.7.0",
     "vue-template-compiler": "^2.6.11"
-  },
-  "lint-staged": {
-    "*.(css|scss|json|md)": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.(js|jsx|ts|tsx|vue)": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
-    }
   }
 }
