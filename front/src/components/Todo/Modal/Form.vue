@@ -196,6 +196,7 @@ export default class Form extends Vue {
         .then((response) => {
           if (this.isSameDate()) {
             item.uuid = response.data.uuid
+            item.tags = response.data.tags
             this.newTodo(item)
           }
 

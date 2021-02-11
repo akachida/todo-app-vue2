@@ -32,6 +32,15 @@
           </div>
           <div class="d-none d-md-block">
             <a
+              v-if="todo.description"
+              href="javascript:void(0);"
+              @click="openDescription(todo)"
+            >
+              <b-button class="mr-1" v-b-tooltip.hover title="Descrição">
+                <b-icon-eye-fill />
+              </b-button>
+            </a>
+            <a
               v-if="!todo.status.includes(Status.Done)"
               href="javascript:void(0);"
               @click="markAsDone(todo)"
@@ -129,6 +138,10 @@ export default class Listagem extends Vue {
     status: [],
     tags: [],
     createdAt: new Date(),
+  }
+
+  public openDescription(todo: TodoType): void {
+    Swal.fire(todo.title, todo.description?.replace(/\n/g, '<br />'))
   }
 
   public async updateTodoService(todo: TodoType): Promise<void> {
