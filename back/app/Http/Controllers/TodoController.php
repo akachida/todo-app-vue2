@@ -8,6 +8,7 @@ use App\Helpers\ApiResponse;
 use App\Helpers\ArrayToResponse;
 use App\Models\Tag;
 use App\Models\Todo;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Psy\Util\Json;
@@ -26,14 +27,19 @@ class TodoController extends Controller
      * @return JsonResponse
      */
     public function list(Request $request): JsonResponse {
+        // @TODO: Params Validation
+        // $request->date -> format yyyy-mm-dd
         $all = Todo::orderBy('created_at', 'DESC');
 
         if ($request->date) {
             try {
                 $date = new DateTime($request->date);
+                $dateEnd = clone $date;
+                $dateEnd->add(new \DateInterval('P1D'));
+
                 $all->whereBetween('created_at', [
-                    $date->format('Y-m-d').' 00:00:00',
-                    $date->format('Y-m-d').' 23:59:59',
+                    $date->format('Y-m-d H:i:s'),
+                    $dateEnd->format('Y-m-d H:i:s'),
                 ]);
             } catch (Throwable $e) {
                 return ApiResponse::error($e->getMessage(), Response::HTTP_BAD_REQUEST);
@@ -105,7 +111,11 @@ class TodoController extends Controller
                 $todo->tags()->sync($request->tags);
             }
 
-            return ApiResponse::success('Tarefa cadastrada com sucesso');
+            $newTodo = $todo->toArray();
+            $newTodo['status'] = json_decode($todo['status']);
+            $newTodo['tags'] = $todo->tags()->get(['uuid', 'name', 'color'])->toArray();
+
+            return ApiResponse::success($newTodo);
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

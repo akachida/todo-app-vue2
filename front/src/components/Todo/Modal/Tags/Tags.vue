@@ -268,13 +268,17 @@ export default class Tags extends Vue {
 
       await tagService.add(item)
         .then((response) => {
-          this.newTag({ uuid: '', name: this.name, color: this.color })
+          this.newTag({
+            uuid: response.data.uuid,
+            name: this.name,
+            color: this.color,
+          })
 
           this.name = ''
           this.color = '#000000'
 
           this.$bvToast.toast(
-            response.data.message,
+            'Tag cadastrada com sucesso',
             {
               title: 'Atenção',
               variant: 'success',

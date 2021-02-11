@@ -145,11 +145,12 @@ export default class Todo extends Vue {
 
   public findAllTodo(date: Date): void {
     const todoService = new TodoService()
-    const year = date.getFullYear()
-    const month = (`0${date.getMonth() + 1}`).substr(-2, 2)
-    const day = date.getDate()
 
-    todoService.findAll({ date: `${year}-${month}-${day}` })
+    date.setHours(0)
+    date.setMinutes(0)
+    date.setSeconds(0)
+
+    todoService.findAll({ date })
       .then((response) => {
         try {
           this.loadTodos(response.data)
