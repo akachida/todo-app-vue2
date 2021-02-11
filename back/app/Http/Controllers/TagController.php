@@ -62,7 +62,7 @@ class TagController extends Controller
             $tag->color = $request->color;
             $tag->save();
 
-            return ApiResponse::success('Tag cadastrada com sucesso');
+            return ApiResponse::success($tag->toArray());
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

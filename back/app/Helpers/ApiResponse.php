@@ -12,11 +12,15 @@ class ApiResponse
     /**
      * Retorna um response HTTP de sucesso em Json
      *
-     * @param string $message
+     * @param string|array $message
      *
      * @return JsonResponse
      */
-    public static function success(string $message): JsonResponse {
+    public static function success(string|array $message): JsonResponse {
+        if (is_array($message)) {
+            return response()->json($message, Response::HTTP_ACCEPTED);
+        }
+
         return response()->json([
             'success' => 1,
             'message' => $message,

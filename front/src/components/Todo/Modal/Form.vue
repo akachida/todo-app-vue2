@@ -124,9 +124,9 @@ export default class Form extends Vue {
       const curMonth = this.$store.state.curDate.getMonth()
       const curYear = this.$store.state.curDate.getFullYear()
 
-      const formDay = this.createdAt.getUTCDate()
-      const formMonth = this.createdAt.getUTCMonth()
-      const formYear = this.createdAt.getUTCFullYear()
+      const formDay = this.createdAt.getDate()
+      const formMonth = this.createdAt.getMonth()
+      const formYear = this.createdAt.getFullYear()
 
       return (
         curDay === formDay
@@ -179,7 +179,7 @@ export default class Form extends Vue {
     const currentSeconds = currentDate.getSeconds()
     const currentTime = `${currentHours}:${currentMinutes}:${currentSeconds}`
 
-    this.createdAt = new Date(`${this.createdAt}T${currentTime}Z`)
+    this.createdAt = new Date(`${this.createdAt} ${currentTime}`)
 
     const item: TodoType = {
       uuid: '',
@@ -195,6 +195,7 @@ export default class Form extends Vue {
       await todoService.add(item)
         .then((response) => {
           if (this.isSameDate()) {
+            item.uuid = response.data.uuid
             this.newTodo(item)
           }
 
