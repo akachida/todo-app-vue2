@@ -6,29 +6,24 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ApiResponse;
 use App\Helpers\ArrayToResponse;
-use App\Models\Tag;
 use App\Models\Todo;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Psy\Util\Json;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use \DateTime;
+use Illuminate\Support\Facades\Validator;
 use \Throwable;
 
 class TodoController extends Controller
 {
     /**
-     * Lista todas as tarefas
-     *
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function list(Request $request): JsonResponse {
-        // @TODO: Params Validation
-        // $request->date -> format yyyy-mm-dd
         $all = Todo::orderBy('created_at', 'DESC');
 
         if ($request->date) {
@@ -61,8 +56,6 @@ class TodoController extends Controller
     }
 
     /**
-     * Exibe os dados de uma tarefa em específica
-     *
      * @param Request $request
      * @param Todo $todo
      *
@@ -79,14 +72,26 @@ class TodoController extends Controller
     }
 
     /**
-     * Cria uma nova tarefa
-     *
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function create(Request $request): JsonResponse {
-        // @TODO: Params Validation
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:100',
+            'status' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            $message = '';
+
+            foreach ($validator->getMessageBag()->all() as $message) {
+                $message .= $message."\n";
+            }
+
+            return ApiResponse::error($message, Response::HTTP_BAD_REQUEST);
+        }
+
         try {
             $todo = new Todo();
             $todo->uuid = Uuid::uuid4();
@@ -115,25 +120,38 @@ class TodoController extends Controller
             $newTodo['status'] = json_decode($todo['status']);
             $newTodo['tags'] = $todo->tags()->get(['uuid', 'name', 'color'])->toArray();
 
-            return ApiResponse::success($newTodo);
+            return ApiResponse::success(ArrayToResponse::prepare($newTodo));
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Atualiza uma tarefa específica
-     *
      * @param Request $request
      * @param Todo $todo
      *
      * @return JsonResponse
      */
     public function update(Request $request, Todo $todo): JsonResponse {
-        // @TODO: Params Validation
         if (!$todo) {
             return ApiResponse::error('Tarefa não encontrada', Response::HTTP_NOT_FOUND);
         }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:50',
+            'status' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            $message = '';
+
+            foreach ($validator->getMessageBag()->all() as $message) {
+                $message .= $message."\n";
+            }
+
+            return ApiResponse::error($message, Response::HTTP_BAD_REQUEST);
+        }
+
 
         try {
             $todo->title = $request->title;
@@ -155,8 +173,6 @@ class TodoController extends Controller
     }
 
     /**
-     * Deleta uma tarefa específica
-     *
      * @param Todo $todo
      *
      * @return JsonResponse
