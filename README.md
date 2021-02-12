@@ -35,3 +35,10 @@ php artisan migrate:install
 php artisan migrate
 php artisan serve
 ```
+
+# TODO
+
+- i18n frontend and backend
+- caching with redis
+- DDD Refactoring on backend
+- authentication with firebase
