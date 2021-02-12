@@ -36,7 +36,7 @@ php artisan migrate
 php artisan serve
 ```
 
-# TODO
+## TODO
 
 - i18n frontend and backend
 - caching with redis
