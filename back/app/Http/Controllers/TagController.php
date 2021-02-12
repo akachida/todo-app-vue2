@@ -9,6 +9,7 @@ use App\Helpers\ArrayToResponse;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use \Throwable;
@@ -16,8 +17,6 @@ use \Throwable;
 class TagController extends Controller
 {
     /**
-     * Lista todas as tags
-     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -29,8 +28,6 @@ class TagController extends Controller
     }
 
     /**
-     * Exibe os dados de uma tag em específica
-     *
      * @param Request $request
      * @param Tag $tag
      *
@@ -47,14 +44,26 @@ class TagController extends Controller
     }
 
     /**
-     * Cria uma nova tag
-     *
      * @param Request $request
      *
      * @return JsonResponse
      */
     public function create(Request $request): JsonResponse {
-        // @TODO: Params Validation
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:20',
+            'color' => 'required|max:7',
+        ]);
+
+        if ($validator->fails()) {
+            $message = '';
+
+            foreach ($validator->getMessageBag()->all() as $message) {
+                $message .= $message."\n";
+            }
+
+            return ApiResponse::error($message, Response::HTTP_BAD_REQUEST);
+        }
+
         try {
             $tag = new Tag();
             $tag->uuid = Uuid::uuid4();
@@ -62,24 +71,36 @@ class TagController extends Controller
             $tag->color = $request->color;
             $tag->save();
 
-            return ApiResponse::success($tag->toArray());
+            return ApiResponse::success(ArrayToResponse::prepare($tag->toArray()));
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Atualiza uma tag específica
-     *
      * @param Request $request
      * @param Tag $tag
      *
      * @return JsonResponse
      */
     public function update(Request $request, Tag $tag): JsonResponse {
-        // @TODO: Params Validation
         if (!$tag) {
             return ApiResponse::error('Tag não encontrada', Response::HTTP_NOT_FOUND);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:20',
+            'color' => 'required|max:7',
+        ]);
+
+        if ($validator->fails()) {
+            $message = '';
+
+            foreach ($validator->getMessageBag()->all() as $message) {
+                $message .= $message."\n";
+            }
+
+            return ApiResponse::error($message, Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -94,8 +115,6 @@ class TagController extends Controller
     }
 
     /**
-     * Deleta uma tag específica
-     *
      * @param Tag $tag
      *
      * @return JsonResponse

@@ -7,7 +7,7 @@
           <b-row>
             <b-col>
               <b-form-group label="Nome *" label-for="name" class="required">
-                <b-input id="name" required aria-required="true" maxlength="50" v-model="name" />
+                <b-input id="name" required aria-required="true" maxlength="20" v-model="name" />
               </b-form-group>
               <b-form-group label="Cor de fundo *" label-for="color" class="required">
                 <b-input id="color" v-model="color" type="color" />
