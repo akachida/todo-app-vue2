@@ -39,6 +39,7 @@ php artisan serve
 ## TODO
 
 - i18n frontend and backend
+- GraphQL
 - caching with redis
 - DDD Refactoring on backend
 - authentication with firebase
