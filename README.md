@@ -1,9 +1,13 @@
 # Todo List App
 
 Simple To-do List built with Vue.js 3 with Typescript
-All the dates are UTC
+
+Obs: All the dates are UTC
+
+## Requirements
 
 Node.js +14
+
 NPM/YARN
 
 ## Installation
