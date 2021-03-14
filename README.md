@@ -1,6 +1,7 @@
 # Todo List App
 
-Simple Todo List built with Vue.js 2 and Laravel 8
+Simple To-do List built with Vue.js 3 with Typescript
+All the dates are UTC
 
 ## Requirements
 
@@ -11,27 +12,30 @@ Simple Todo List built with Vue.js 2 and Laravel 8
 
 ## Installation
 
-### Frontend
+```bash
+npm install
+```
+
+### Compiles and hot-reloads for development
 
 ```bash
-cd front
-npm install
 npm run serve
 ```
 
-### Backend
+### Compiles and minifies for production
 
 ```bash
-cd back
-cp .env.example .env
+npm run build
 ```
 
-Change the configurations of .env file to your own settings and after that:
+### Lints and fixes files
 
 ```bash
-composer install
-php artisan key:generate
-php artisan migrate:install
-php artisan migrate
-php artisan serve
+npm run lint
 ```
+
+## TODO
+
+- i18n
+- graphql
+- authentication with firebase
