@@ -3,12 +3,8 @@
 Simple To-do List built with Vue.js 3 with Typescript
 All the dates are UTC
 
-## Requirements
-
-- MySQL 5.4+
-- PHP 7.4+ (Recommended 8+)
-- Composer
-- NPM
+Node.js +14
+NPM/YARN
 
 ## Installation
 
