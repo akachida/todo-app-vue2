@@ -10,12 +10,13 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 2020,
+    parser: '@typescript-eslint/parser',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'semi': [2, 'never'],
+    semi: [2, 'never'],
     'object-curly-newline': 'off',
     'class-methods-use-this': 'off',
   },
-};
+}
